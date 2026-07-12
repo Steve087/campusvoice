@@ -6,3 +6,9 @@ hdbscan
 vaderSentiment
 python-multipart
 numpy
+python-jose[cryptography]
+passlib[bcrypt]
+python-dotenv
+sqlalchemy
+psycopg2-binary
+asyncpg
