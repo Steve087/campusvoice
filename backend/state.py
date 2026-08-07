@@ -1,7 +1,5 @@
-# backend/state.py
-
 from sentence_transformers import SentenceTransformer
+import numpy as np
 
-# This will hold the loaded model
-# None until lifespan sets it at startup
 model: SentenceTransformer | None = None
+vector_cache: dict[str, np.ndarray] = {}
