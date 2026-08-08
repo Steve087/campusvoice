@@ -7,12 +7,13 @@ from services.clustering import cluster_feedback
 from services.sentiment import analyze_sentiment
 import state
 import json
+from services.auth import require_admin
 
 router = APIRouter(prefix="/analyze", tags=["analyze"])
 
 
 @router.post("/", response_model=AnalysisResult)
-def analyze_feedback(req: AnalyzeRequest, db: Session = Depends(get_db)):
+def analyze_feedback(req: AnalyzeRequest, db: Session = Depends(get_db), current_user=Depends(require_admin)):
     # 1. Get vectors from cache
     vectors = state.vector_cache.get(req.session_id)
     if vectors is None:

@@ -4,14 +4,18 @@ from database import get_db
 from models.db_models import FeedbackItem as DBFeedbackItem
 from models.schemas import EmbedRequest, EmbedResponse
 from services.embeddings import generate_embeddings
+from services.auth import require_admin
 import state
 
 router = APIRouter(prefix="/embed", tags=["embed"])
 
 
 @router.post("/", response_model=EmbedResponse)
-def embed_feedback(req: EmbedRequest, db: Session = Depends(get_db)):
-    # 1. Load feedback from DB
+def embed_feedback(
+    req: EmbedRequest,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin)
+):
     items = db.query(DBFeedbackItem).filter(
         DBFeedbackItem.session_id == req.session_id
     ).all()
@@ -19,13 +23,8 @@ def embed_feedback(req: EmbedRequest, db: Session = Depends(get_db)):
     if not items:
         raise HTTPException(status_code=404, detail="Session not found")
 
-    # 2. Extract texts
     texts = [item.text for item in items]
-
-    # 3. Generate vectors
     vectors = generate_embeddings(texts)
-
-    # 4. Store in memory cache keyed by session_id
     state.vector_cache[req.session_id] = vectors
 
     return EmbedResponse(
