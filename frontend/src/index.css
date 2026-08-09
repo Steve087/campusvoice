@@ -1,0 +1,72 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: #0f1729;
+  color: #e8edf5;
+  min-height: 100vh;
+}
+
+input, textarea, select {
+  background: #1e2d4a;
+  border: 1px solid #2a3f6f;
+  color: #e8edf5;
+  padding: 10px 14px;
+  border-radius: 8px;
+  width: 100%;
+  font-size: 14px;
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  border-color: #00d4aa;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+button:hover { opacity: 0.85; }
+
+.btn-primary {
+  background: #00d4aa;
+  color: #0f1729;
+}
+
+.btn-danger {
+  background: #ef4444;
+  color: white;
+}
+
+.card {
+  background: #1e2d4a;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+.urgent {
+  border-left: 4px solid #ef4444;
+}
+
+.label {
+  font-size: 12px;
+  color: #8899bb;
+  margin-bottom: 6px;
+}
+
+.error {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: 8px;
+}
