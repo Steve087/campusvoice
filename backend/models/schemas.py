@@ -7,7 +7,6 @@ from datetime import datetime
 class RegisterRequest(BaseModel):
     email: str
     password: str
-    role: str  # "student" or "admin"
 
 class LoginRequest(BaseModel):
     email: str

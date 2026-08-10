@@ -2,10 +2,22 @@ import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import API from '../api';
 
+const DEPARTMENTS = ['CSE', 'ECE', 'EEE', 'MCA'];
+const CATEGORIES = [
+  'WiFi / Internet',
+  'Canteen / Food',
+  'Teachers / Faculty',
+  'Classroom / Lab',
+  'Library',
+  'Hostel',
+  'Sports',
+  'Other'
+];
+
 export default function StudentFeedback() {
   const [text, setText] = useState('');
   const [department, setDepartment] = useState('');
-  const [subject, setSubject] = useState('');
+  const [category, setCategory] = useState('');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
 
@@ -13,12 +25,17 @@ export default function StudentFeedback() {
     setError('');
     setSuccess(false);
     if (!text.trim()) { setError('Feedback cannot be empty'); return; }
+    if (!department) { setError('Please select your department'); return; }
     try {
-      await API.post('/feedback/submit', { text, department, subject });
+      await API.post('/feedback/submit', {
+        text,
+        department,
+        subject: category  // reusing subject field for category
+      });
       setSuccess(true);
       setText('');
       setDepartment('');
-      setSubject('');
+      setCategory('');
     } catch (err) {
       setError(err.response?.data?.detail || 'Submission failed');
     }
@@ -34,20 +51,30 @@ export default function StudentFeedback() {
         </p>
 
         <div className="card">
-          <div className="label">Department (optional)</div>
-          <input
+          <div className="label">Department</div>
+          <select
             value={department}
             onChange={e => setDepartment(e.target.value)}
-            placeholder="e.g. CSE, ECE"
             style={{ marginBottom: 16 }}
-          />
-          <div className="label">Subject (optional)</div>
-          <input
-            value={subject}
-            onChange={e => setSubject(e.target.value)}
-            placeholder="e.g. Data Structures"
+          >
+            <option value="">Select department</option>
+            {DEPARTMENTS.map(d => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+
+          <div className="label">Category</div>
+          <select
+            value={category}
+            onChange={e => setCategory(e.target.value)}
             style={{ marginBottom: 16 }}
-          />
+          >
+            <option value="">Select category (optional)</option>
+            {CATEGORIES.map(c => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+
           <div className="label">Your Feedback</div>
           <textarea
             value={text}
@@ -59,9 +86,11 @@ export default function StudentFeedback() {
           <button className="btn-primary" onClick={handleSubmit} style={{ width: '100%' }}>
             Submit Anonymously
           </button>
-          {success && <div style={{ color: '#00d4aa', marginTop: 12, fontSize: 13 }}>
-            ✓ Feedback submitted successfully
-          </div>}
+          {success && (
+            <div style={{ color: '#00d4aa', marginTop: 12, fontSize: 13 }}>
+              ✓ Feedback submitted successfully
+            </div>
+          )}
           {error && <div className="error">{error}</div>}
         </div>
       </div>

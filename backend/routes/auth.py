@@ -21,13 +21,10 @@ def register(req: RegisterRequest, db: Session = Depends(get_db)):
     if existing:
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    if req.role not in ["student", "admin"]:
-        raise HTTPException(status_code=400, detail="Role must be student or admin")
-
     user = User(
         email=req.email,
         hashed_password=hash_password(req.password),
-        role=req.role
+        role="student"  # ← always student
     )
     db.add(user)
     db.commit()

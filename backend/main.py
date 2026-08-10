@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from sentence_transformers import SentenceTransformer
 import state
 from database import create_tables
-from routes import auth, upload, embed, analyze, admin, feedback
+from routes import auth, upload, analyze, admin, feedback
 
 
 @asynccontextmanager
@@ -34,7 +34,6 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(upload.router)
-app.include_router(embed.router)
 app.include_router(analyze.router)
 app.include_router(admin.router)
 app.include_router(feedback.router)
