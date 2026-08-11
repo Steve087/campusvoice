@@ -3,6 +3,67 @@ import Navbar from '../components/Navbar';
 import API from '../api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
+function ViewAll({ sessionLike }) {
+  const [open, setOpen] = useState(false);
+  const [items, setItems] = useState([]);
+  const [loaded, setLoaded] = useState(false);
+
+  const load = async () => {
+    if (loaded) { setOpen(!open); return; }
+    try {
+      const res = await API.get('/admin/all-feedback');
+      setItems(res.data);
+      setLoaded(true);
+      setOpen(true);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  return (
+    <div style={{ marginTop: 16 }}>
+      <button
+        onClick={load}
+        style={{
+          background: 'transparent',
+          border: '1px solid #2a3f6f',
+          color: '#8899bb',
+          padding: '8px 16px',
+          borderRadius: 8,
+          cursor: 'pointer',
+          fontSize: 13
+        }}
+      >
+        {open ? 'Hide All Feedback' : 'View All Feedback'}
+      </button>
+
+      {open && items.length > 0 && (
+        <div style={{ marginTop: 16, overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid #2a3f6f' }}>
+                {['#', 'Department', 'Category', 'Feedback'].map(h => (
+                  <th key={h} style={{ padding: '8px 12px', textAlign: 'left', color: '#8899bb' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {items.map((item, i) => (
+                <tr key={i} style={{ borderBottom: '1px solid #1a2a40' }}>
+                  <td style={{ padding: '8px 12px', color: '#8899bb' }}>{i + 1}</td>
+                  <td style={{ padding: '8px 12px' }}>{item.department || '—'}</td>
+                  <td style={{ padding: '8px 12px' }}>{item.subject || '—'}</td>
+                  <td style={{ padding: '8px 12px' }}>{item.text}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminDashboard() {
   const [file, setFile] = useState(null);
   const [sessionId, setSessionId] = useState('');
@@ -61,6 +122,7 @@ export default function AdminDashboard() {
       <div style={{ marginBottom: 40 }}>
         <h3 style={{ marginBottom: 16, color: '#00d4aa' }}>{title}</h3>
 
+        {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
           {[
             { label: 'Total Feedback', value: data.total_feedback },
@@ -74,6 +136,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
+        {/* Department Sentiment Chart */}
         {deptData.length > 0 && (
           <div className="card">
             <div style={{ fontWeight: 600, marginBottom: 16 }}>Department Sentiment</div>
@@ -92,6 +155,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Clusters */}
         {data.clusters.length > 0 && (
           <div>
             <div style={{ fontWeight: 600, marginBottom: 12 }}>Clusters</div>
@@ -111,6 +175,7 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Urgent Items */}
         {data.urgent_items.length > 0 && (
           <div>
             <div style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444' }}>🚨 Urgent Items</div>
@@ -122,6 +187,9 @@ export default function AdminDashboard() {
             ))}
           </div>
         )}
+
+        {/* View All Toggle */}
+        <ViewAll sessionLike={title} />
       </div>
     );
   };

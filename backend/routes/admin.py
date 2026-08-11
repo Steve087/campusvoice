@@ -155,3 +155,19 @@ def analyze_submissions(
         "urgent_items": [i.model_dump() for i in urgent_items],
         "department_sentiments": dept_sentiments
     }
+
+@router.get("/all-feedback")
+def get_all_feedback(
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin)
+):
+    items = db.query(DBFeedbackItem).order_by(DBFeedbackItem.submitted_at.desc()).all()
+    return [
+        {
+            "text": item.text,
+            "department": item.department,
+            "subject": item.subject,
+            "submitted_at": item.submitted_at
+        }
+        for item in items
+    ]
