@@ -118,11 +118,10 @@ def analyze_submissions(
     db: Session = Depends(get_db),
     current_user=Depends(require_admin)
 ):
-    items = db.query(DBFeedbackItem).filter(
-        DBFeedbackItem.session_id.like("direct-%")
-    ).all()
+    # Pull ALL feedback — both CSV and direct submissions
+    items = db.query(DBFeedbackItem).all()
 
-    if len(items) < 2:  # ← need at least 2 items
+    if len(items) < 2:
         return {
             "total_feedback": len(items),
             "total_clusters": 0,
@@ -148,13 +147,14 @@ def analyze_submissions(
     clusters, urgent_items, dept_sentiments = analyze_sentiment(clusters, noise)
 
     return {
-        "total_feedback": len(feedback),
-        "total_clusters": len(clusters),
-        "clusters": [c.model_dump() for c in clusters],
-        "noise_count": len(noise),
-        "urgent_items": [i.model_dump() for i in urgent_items],
-        "department_sentiments": dept_sentiments
-    }
+    "total_feedback": len(feedback),
+    "total_clusters": len(clusters),
+    "clusters": [c.model_dump() for c in clusters],
+    "noise_count": len(noise),
+    "noise_items": [i.model_dump() for i in noise],    # ← add this
+    "urgent_items": [i.model_dump() for i in urgent_items],
+    "department_sentiments": dept_sentiments
+}
 
 @router.get("/all-feedback")
 def get_all_feedback(

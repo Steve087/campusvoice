@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from sentence_transformers import SentenceTransformer
+from transformers import pipeline
 import state
 from database import create_tables
 from routes import auth, upload, analyze, admin, feedback
@@ -14,6 +15,13 @@ async def lifespan(app: FastAPI):
     print("Loading embedding model...")
     state.model = SentenceTransformer("all-MiniLM-L6-v2")
     print("Model ready.")
+    
+    print("Loading toxicity classifier...")
+    state.toxicity_classifier = pipeline(
+    "text-classification",
+    model="Hate-speech-CNERG/deoffxlmr-mono-malyalam"
+    )
+    print("Toxicity classifier ready.")
     yield
     print("Shutting down.")
 
@@ -42,3 +50,4 @@ app.include_router(feedback.router)
 @app.get("/")
 def root():
     return {"status": "CampusVoice API is running"}
+

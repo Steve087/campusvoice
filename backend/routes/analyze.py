@@ -70,11 +70,12 @@ def analyze_feedback(
     db.commit()
 
     return AnalysisResult(
-        session_id=req.session_id,
-        total_feedback=len(feedback),
-        total_clusters=len(clusters),
-        clusters=clusters,
-        noise_count=len(noise),
-        urgent_items=urgent_items,
-        department_sentiments=dept_sentiments
-    )
+    session_id=req.session_id,
+    total_feedback=len(feedback),
+    total_clusters=len(clusters),
+    clusters=clusters,
+    noise_count=len(noise),
+    noise_items=noise,              # ← add this
+    urgent_items=urgent_items,
+    department_sentiments=dept_sentiments
+)

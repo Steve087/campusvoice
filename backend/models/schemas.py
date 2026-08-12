@@ -78,5 +78,6 @@ class AnalysisResult(BaseModel):
     total_clusters: int
     clusters: list[FeedbackCluster]
     noise_count: int
+    noise_items: list[FeedbackItem]      # ← add this
     urgent_items: list[FeedbackItem]
     department_sentiments: dict[str, float]

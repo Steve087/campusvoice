@@ -188,6 +188,22 @@ export default function AdminDashboard() {
           </div>
         )}
 
+        {/* Uncategorized / Noise */}
+        {data.noise_items && data.noise_items.length > 0 && (
+          <div>
+            <div style={{ fontWeight: 600, marginBottom: 12, color: '#8899bb' }}>
+              Uncategorized ({data.noise_items.length} items)
+            </div>
+            {data.noise_items.map((item, i) => (
+              <div key={i} className="card" style={{ borderLeft: '4px solid #2a3f6f' }}>
+                <div style={{ fontSize: 13 }}>{item.text}</div>
+                {item.department && (
+                  <div className="label" style={{ marginTop: 4 }}>{item.department}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
         {/* View All Toggle */}
         <ViewAll sessionLike={title} />
       </div>
@@ -202,7 +218,7 @@ export default function AdminDashboard() {
 
         {/* Student Submissions — auto loaded */}
         {submissions && submissions.total_feedback > 0
-          ? renderAnalysis(submissions, `Student Submissions (${submissions.total_feedback} total)`)
+          ? renderAnalysis(submissions, `All Feedback (${submissions.total_feedback} total)`)
           : <div className="card" style={{ color: '#8899bb', fontSize: 13 }}>
               No student submissions yet.
             </div>
