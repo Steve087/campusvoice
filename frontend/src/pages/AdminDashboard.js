@@ -209,18 +209,54 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Urgent Items */}
-        {data.urgent_items.length > 0 && (
-          <div>
-            <div style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444' }}>🚨 Urgent Items</div>
-            {data.urgent_items.map((item, i) => (
-              <div key={i} className="card urgent">
-                <div style={{ fontSize: 13 }}>{item.text}</div>
-                {item.department && <div className="label" style={{ marginTop: 4 }}>{item.department}</div>}
-              </div>
-            ))}
+        {/* Urgent Clusters — show clusters that are urgent */}
+{data.clusters.filter(c => c.is_urgent).length > 0 && (
+  <div>
+    <div style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444' }}>
+      🚨 Urgent Issues
+    </div>
+    {data.clusters.filter(c => c.is_urgent).map((cluster, i) => (
+      <div key={i} className="card urgent">
+        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+          <span style={{ fontWeight: 600 }}>{cluster.label}</span>
+          <span style={{ color: '#ef4444', fontSize: 13 }}>
+            {cluster.sentiment_score.toFixed(2)} · {cluster.size} items
+          </span>
+        </div>
+        {cluster.items.map((item, j) => (
+          <div key={j} style={{ fontSize: 13, color: '#8899bb', marginTop: 4 }}>
+            • {item.text}
           </div>
-        )}
+        ))}
+      </div>
+    ))}
+  </div>
+)}
+
+{/* Urgent unclustered items — exclude items already in urgent clusters */}
+{(() => {
+  const urgentClusterTexts = new Set(
+    data.clusters
+      .filter(c => c.is_urgent)
+      .flatMap(c => c.items.map(i => i.text.trim().toLowerCase()))
+  );
+  const remainingUrgent = data.urgent_items.filter(
+    item => !urgentClusterTexts.has(item.text.trim().toLowerCase())
+  );
+  return remainingUrgent.length > 0 ? (
+    <div style={{ marginTop: 16 }}>
+      <div style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444', fontSize: 13 }}>
+        Other Urgent Feedback
+      </div>
+      {remainingUrgent.map((item, i) => (
+        <div key={i} className="card urgent">
+          <div style={{ fontSize: 13 }}>{item.text}</div>
+          {item.department && <div className="label" style={{ marginTop: 4 }}>{item.department}</div>}
+        </div>
+      ))}
+    </div>
+  ) : null;
+})()}
 
         {/* Uncategorized / Noise */}
         {data.noise_items && data.noise_items.length > 0 && (
