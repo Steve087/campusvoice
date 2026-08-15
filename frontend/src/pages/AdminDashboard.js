@@ -158,17 +158,22 @@ export default function AdminDashboard() {
 
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-          {[
-            { label: 'Total Feedback', value: data.total_feedback },
-            { label: 'Clusters Found', value: data.total_clusters },
-            { label: 'Urgent Items', value: data.urgent_items.length },
-          ].map(s => (
-            <div className="card" key={s.label} style={{ textAlign: 'center', margin: 0 }}>
-              <div style={{ fontSize: 32, fontWeight: 700, color: '#00d4aa' }}>{s.value}</div>
-              <div className="label" style={{ marginTop: 4 }}>{s.label}</div>
-            </div>
-          ))}
-        </div>
+  {[
+    { label: 'Total Feedback', value: data.total_feedback, anchor: 'all-feedback' },
+    { label: 'Clusters Found', value: data.total_clusters, anchor: 'clusters' },
+    { label: 'Urgent Items', value: data.urgent_items.length, anchor: 'urgent' },
+  ].map(s => (
+    <div
+      className="card"
+      key={s.label}
+      style={{ textAlign: 'center', margin: 0, cursor: 'pointer' }}
+      onClick={() => document.getElementById(s.anchor)?.scrollIntoView({ behavior: 'smooth' })}
+    >
+      <div style={{ fontSize: 32, fontWeight: 700, color: '#00d4aa' }}>{s.value}</div>
+      <div className="label" style={{ marginTop: 4 }}>{s.label}</div>
+    </div>
+  ))}
+</div>
 
         {/* Department Sentiment Chart */}
         {deptData.length > 0 && (
@@ -192,7 +197,7 @@ export default function AdminDashboard() {
         {/* Clusters */}
         {data.clusters.length > 0 && (
           <div>
-            <div style={{ fontWeight: 600, marginBottom: 12 }}>Clusters</div>
+            <div id="clusters" style={{ fontWeight: 600, marginBottom: 12 }}>Clusters</div>
             {data.clusters.map((cluster, i) => (
               <div key={i} className={`card ${cluster.is_urgent ? 'urgent' : ''}`}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -212,9 +217,7 @@ export default function AdminDashboard() {
         {/* Urgent Clusters — show clusters that are urgent */}
 {data.clusters.filter(c => c.is_urgent).length > 0 && (
   <div>
-    <div style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444' }}>
-      🚨 Urgent Issues
-    </div>
+    <div id="urgent" style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444' }}>🚨 Urgent Issues</div>
     {data.clusters.filter(c => c.is_urgent).map((cluster, i) => (
       <div key={i} className="card urgent">
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
@@ -275,7 +278,9 @@ export default function AdminDashboard() {
           </div>
         )}
         {/* View All Toggle */}
-        <ViewAll sessionLike={title} />
+        <div id="all-feedback">
+  <ViewAll sessionLike={title} />
+</div>
       </div>
     );
   };
