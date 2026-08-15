@@ -3,6 +3,40 @@ import Navbar from '../components/Navbar';
 import API from '../api';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
+function TestFeedback() {
+  const [text, setText] = useState('');
+  const [dept, setDept] = useState('CSE');
+  const [status, setStatus] = useState('');
+
+  const submit = async () => {
+    try {
+      await API.post('/feedback/submit-admin-test', { text, department: dept, subject: '' });
+      setStatus('✓ Submitted');
+      setText('');
+    } catch (err) {
+      setStatus(err.response?.data?.detail || 'Failed');
+    }
+  };
+
+  return (
+    <div className="card" style={{ marginBottom: 24 }}>
+      <div style={{ fontWeight: 600, marginBottom: 12 }}>Test Feedback Submission</div>
+      <select value={dept} onChange={e => setDept(e.target.value)} style={{ marginBottom: 8 }}>
+        {['CSE', 'ECE', 'EEE', 'MCA'].map(d => <option key={d}>{d}</option>)}
+      </select>
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder="Type test feedback..."
+        rows={3}
+        style={{ marginBottom: 8 }}
+      />
+      <button className="btn-primary" onClick={submit}>Submit Test Feedback</button>
+      {status && <div style={{ color: '#00d4aa', fontSize: 13, marginTop: 8 }}>{status}</div>}
+    </div>
+  );
+}
+
 function ViewAll({ sessionLike }) {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
@@ -214,6 +248,7 @@ export default function AdminDashboard() {
     <div>
       <Navbar role="admin" />
       <div style={{ maxWidth: 900, margin: '40px auto', padding: '0 24px' }}>
+        <TestFeedback />
         <h2 style={{ marginBottom: 24 }}>Feedback Analysis</h2>
 
         {/* Student Submissions — auto loaded */}

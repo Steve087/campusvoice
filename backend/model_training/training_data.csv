@@ -1,0 +1,109 @@
+text1,text2,label
+wifi is bad,internet not working,1.0
+internet not working,wifi is bad,1.0
+wifi is terrible,network connection is poor,1.0
+network connection is poor,wifi is terrible,1.0
+wifi speed is slow,internet is very slow,1.0
+internet is very slow,wifi speed is slow,1.0
+wifi signal is weak,internet keeps dropping,1.0
+internet keeps dropping,wifi signal is weak,1.0
+wifi not working in lab,internet doesn't work in class,1.0
+internet doesn't work in class,wifi not working in lab,1.0
+wifi adipoli pora,internet slow aanu,1.0
+internet slow aanu,wifi adipoli pora,1.0
+net speed kuravaan,wifi connection illa,1.0
+wifi connection illa,net speed kuravaan,1.0
+internet connectivity poor,network not available in lab,1.0
+network not available in lab,internet connectivity poor,1.0
+wifi password not working,cant connect to internet,1.0
+cant connect to internet,wifi password not working,1.0
+broadband speed is very low,internet bandwidth is insufficient,1.0
+internet bandwidth is insufficient,broadband speed is very low,1.0
+canteen food is bad,mess food quality is poor,1.0
+mess food quality is poor,canteen food is bad,1.0
+food in canteen is cold,mess serves stale food,1.0
+mess serves stale food,food in canteen is cold,1.0
+canteen food quality dropped,mess food is not good,1.0
+mess food is not good,canteen food quality dropped,1.0
+lunch options are limited,mess menu needs improvement,1.0
+mess menu needs improvement,lunch options are limited,1.0
+food is tasteless in canteen,mess food has no quality,1.0
+mess food has no quality,food is tasteless in canteen,1.0
+mess food karyam illa,canteen quality poor aanu,1.0
+canteen quality poor aanu,mess food karyam illa,1.0
+food waste aanu canteen il,mess serve cheyunnathu kollilla,1.0
+mess serve cheyunnathu kollilla,food waste aanu canteen il,1.0
+breakfast options are very limited,morning food choices are few,1.0
+morning food choices are few,breakfast options are very limited,1.0
+canteen prices are too high,mess food is overpriced,1.0
+mess food is overpriced,canteen prices are too high,1.0
+food hygiene in canteen is poor,mess cleanliness is bad,1.0
+mess cleanliness is bad,food hygiene in canteen is poor,1.0
+teachers don't finish syllabus,faculty not completing portions,1.0
+faculty not completing portions,teachers don't finish syllabus,1.0
+some lecturers are not available,teachers skip office hours,1.0
+teachers skip office hours,some lecturers are not available,1.0
+faculty attendance is poor,teachers don't come to lab,1.0
+teachers don't come to lab,faculty attendance is poor,1.0
+teaching quality needs improvement,lecturers need better methods,1.0
+lecturers need better methods,teaching quality needs improvement,1.0
+sir class edukkunilla,teacher absent aanu,1.0
+teacher absent aanu,sir class edukkunilla,1.0
+faculty not responsive to doubts,teachers dont answer questions,1.0
+teachers dont answer questions,faculty not responsive to doubts,1.0
+some professors favor certain students,teacher bias is a problem,1.0
+teacher bias is a problem,some professors favor certain students,1.0
+lab instructor not present,practical session has no supervision,1.0
+practical session has no supervision,lab instructor not present,1.0
+teacher explains too fast,lectures are hard to follow,1.0
+lectures are hard to follow,teacher explains too fast,1.0
+projector not working in class,classroom equipment is broken,1.0
+classroom equipment is broken,projector not working in class,1.0
+lab equipment is outdated,computers in lab are old,1.0
+computers in lab are old,lab equipment is outdated,1.0
+classroom is dusty,lab needs cleaning,1.0
+lab needs cleaning,classroom is dusty,1.0
+library closes too early,library timing should be extended,1.0
+library timing should be extended,library closes too early,1.0
+hostel wifi speed slow,internet in hostel is bad,1.0
+internet in hostel is bad,hostel wifi speed slow,1.0
+computer lab systems are slow,lab PCs are outdated,1.0
+lab PCs are outdated,computer lab systems are slow,1.0
+ac not working in classroom,class room is too hot,1.0
+class room is too hot,ac not working in classroom,1.0
+drinking water facility is poor,water purifier not working,1.0
+water purifier not working,drinking water facility is poor,1.0
+parking space is insufficient,no proper parking area,1.0
+no proper parking area,parking space is insufficient,1.0
+wifi is bad,canteen food is bad,0.0
+canteen food is bad,wifi is bad,0.0
+internet not working,teachers don't finish syllabus,0.0
+teachers don't finish syllabus,internet not working,0.0
+mess food quality poor,lab equipment is outdated,0.0
+lab equipment is outdated,mess food quality poor,0.0
+faculty attendance poor,wifi signal is weak,0.0
+wifi signal is weak,faculty attendance poor,0.0
+library closes early,canteen food is cold,0.0
+canteen food is cold,library closes early,0.0
+projector not working,internet keeps dropping,0.0
+internet keeps dropping,projector not working,0.0
+classroom is dusty,mess food is tasteless,0.0
+mess food is tasteless,classroom is dusty,0.0
+teaching quality poor,wifi speed is slow,0.0
+wifi speed is slow,teaching quality poor,0.0
+wifi is bad,library books are old,0.0
+library books are old,wifi is bad,0.0
+canteen food poor,parking is insufficient,0.0
+parking is insufficient,canteen food poor,0.0
+teacher absent,water facility poor,0.0
+water facility poor,teacher absent,0.0
+internet slow,ac not working,0.0
+ac not working,internet slow,0.0
+lab equipment old,canteen prices high,0.0
+canteen prices high,lab equipment old,0.0
+hostel wifi bad,teacher explains fast,0.0
+teacher explains fast,hostel wifi bad,0.0
+library noisy,mess food hygiene poor,0.0
+mess food hygiene poor,library noisy,0.0
+parking insufficient,faculty not responsive,0.0
+faculty not responsive,parking insufficient,0.0

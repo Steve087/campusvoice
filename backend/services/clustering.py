@@ -17,7 +17,7 @@ def deduplicate(feedback: list[FeedbackItem]) -> list[FeedbackItem]:
 def cluster_feedback(
     feedback: list[FeedbackItem],
     vectors: np.ndarray,
-    min_cluster_size: int = 3
+    min_cluster_size: int = 2
 ) -> tuple[list[FeedbackCluster], list[FeedbackItem]]:
 
     # Deduplicate before clustering
@@ -35,8 +35,8 @@ def cluster_feedback(
 
     clusterer = hdbscan.HDBSCAN(
         min_cluster_size=min_cluster_size,
-        min_samples=2,
-        metric="cosine",
+        min_samples=1,
+        metric="euclidean",
         cluster_selection_method="eom",
         cluster_selection_epsilon=0.15
     )

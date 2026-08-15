@@ -13,7 +13,7 @@ async def lifespan(app: FastAPI):
     create_tables()
     print("Database ready.")
     print("Loading embedding model...")
-    state.model = SentenceTransformer("all-MiniLM-L6-v2")
+    state.model = SentenceTransformer("models/cec-feedback-model")
     print("Model ready.")
     
     print("Loading toxicity classifier...")

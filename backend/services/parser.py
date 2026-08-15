@@ -3,6 +3,33 @@ import io
 from models.schemas import FeedbackItem
 
 
+SYNONYMS = {
+    "wifi": "internet",
+    "wi-fi": "internet",
+    "net": "internet",
+    "network": "internet",
+    "connection": "internet",
+    "mess": "canteen",
+    "food court": "canteen",
+    "projector": "classroom equipment",
+    "lab equipment": "classroom equipment",
+    "faculty": "teacher",
+    "prof": "teacher",
+    "professor": "teacher",
+    "lecturer": "teacher",
+    "sir": "teacher",
+    "madam": "teacher",
+    "ma'am": "teacher",
+}
+
+
+def normalize_text(text: str) -> str:
+    text = text.lower()
+    for word, replacement in SYNONYMS.items():
+        text = text.replace(word, replacement)
+    return text
+
+
 def parse_csv(file_bytes: bytes) -> list[FeedbackItem]:
     content = file_bytes.decode("utf-8")
     reader = csv.DictReader(io.StringIO(content))

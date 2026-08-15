@@ -48,8 +48,7 @@ def analyze_feedback(
     clusters, noise = cluster_feedback(feedback, vectors, req.min_cluster_size)
 
     # 5. Sentiment
-    clusters, urgent_items, dept_sentiments = analyze_sentiment(clusters, noise)
-
+    clusters, urgent_items, noise, dept_sentiments = analyze_sentiment(clusters, noise)
     # 6. Save to DB
     existing = db.query(DBAnalysisResult).filter(
         DBAnalysisResult.session_id == req.session_id

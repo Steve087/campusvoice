@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 from database import get_db
 from models.db_models import FeedbackItem as DBFeedbackItem, Session as DBSession
 from models.schemas import FeedbackSubmit, FeedbackItem
-from services.auth import get_current_user
+from services.auth import get_current_user, require_admin
 import state
 import uuid
-
 router = APIRouter(prefix="/feedback", tags=["feedback"])
 
 
@@ -66,3 +65,35 @@ def submit_feedback(
         department=req.department,
         subject=req.subject
     )
+
+@router.post("/submit-admin-test")
+def submit_admin_test(
+    req: FeedbackSubmit,
+    db: Session = Depends(get_db),
+    current_user=Depends(require_admin)
+):
+    if not is_appropriate(req.text):
+        raise HTTPException(
+            status_code=400,
+            detail="Feedback flagged as inappropriate or too short."
+        )
+
+    session_id = f"direct-{uuid.uuid4()}"
+    db_session = DBSession(
+        session_id=session_id,
+        created_by=current_user.id,
+        total_rows=1
+    )
+    db.add(db_session)
+
+    item = DBFeedbackItem(
+        item_id=0,
+        session_id=session_id,
+        text=req.text,
+        department=req.department,
+        subject=req.subject
+    )
+    db.add(item)
+    db.commit()
+
+    return {"message": "Test feedback submitted"}

@@ -144,8 +144,7 @@ def analyze_submissions(
     texts = [item.text for item in feedback]
     vectors = generate_embeddings(texts)
     clusters, noise = cluster_feedback(feedback, vectors, min_cluster_size=2)
-    clusters, urgent_items, dept_sentiments = analyze_sentiment(clusters, noise)
-
+    clusters, urgent_items, noise, dept_sentiments = analyze_sentiment(clusters, noise)
     return {
     "total_feedback": len(feedback),
     "total_clusters": len(clusters),
