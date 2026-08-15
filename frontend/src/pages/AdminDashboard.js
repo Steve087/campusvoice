@@ -37,7 +37,7 @@ function TestFeedback() {
   );
 }
 
-function ViewAll({ sessionLike }) {
+function ViewAll() {
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState([]);
   const [loaded, setLoaded] = useState(false);
@@ -55,7 +55,7 @@ function ViewAll({ sessionLike }) {
   };
 
   return (
-    <div style={{ marginTop: 16 }}>
+    <div id="all-feedback" style={{ marginTop: 16 }}>
       <button
         onClick={load}
         style={{
@@ -106,8 +106,8 @@ export default function AdminDashboard() {
   const [submissions, setSubmissions] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [selectedDept, setSelectedDept] = useState('All');
 
-  // Auto-analyze student submissions on load
   useEffect(() => {
     const fetchSubmissions = async () => {
       try {
@@ -148,9 +148,40 @@ export default function AdminDashboard() {
     setLoading(false);
   };
 
-  const renderAnalysis = (data, title) => {
+  const renderAnalysis = (data, title, dept = 'All') => {
     if (!data || data.total_feedback === 0) return null;
-    const deptData = Object.entries(data.department_sentiments).map(([dept, score]) => ({ dept, score }));
+
+    // Filter by department
+    const filteredClusters = dept === 'All'
+      ? data.clusters
+      : data.clusters.map(c => ({
+          ...c,
+          items: c.items.filter(i => i.department === dept)
+        })).filter(c => c.items.length > 0);
+
+    const filteredUrgent = dept === 'All'
+      ? data.urgent_items
+      : data.urgent_items.filter(i => i.department === dept);
+
+    const filteredNoise = dept === 'All'
+      ? (data.noise_items || [])
+      : (data.noise_items || []).filter(i => i.department === dept);
+
+    const deptData = dept === 'All'
+      ? Object.entries(data.department_sentiments).map(([d, score]) => ({ dept: d, score }))
+      : Object.entries(data.department_sentiments)
+          .filter(([d]) => d === dept)
+          .map(([d, score]) => ({ dept: d, score }));
+
+    const urgentClusterTexts = new Set(
+      filteredClusters
+        .filter(c => c.is_urgent)
+        .flatMap(c => c.items.map(i => i.text.trim().toLowerCase()))
+    );
+
+    const remainingUrgent = filteredUrgent.filter(
+      item => !urgentClusterTexts.has(item.text.trim().toLowerCase())
+    );
 
     return (
       <div style={{ marginBottom: 40 }}>
@@ -158,22 +189,22 @@ export default function AdminDashboard() {
 
         {/* Stats */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginBottom: 24 }}>
-  {[
-    { label: 'Total Feedback', value: data.total_feedback, anchor: 'all-feedback' },
-    { label: 'Clusters Found', value: data.total_clusters, anchor: 'clusters' },
-    { label: 'Urgent Items', value: data.urgent_items.length, anchor: 'urgent' },
-  ].map(s => (
-    <div
-      className="card"
-      key={s.label}
-      style={{ textAlign: 'center', margin: 0, cursor: 'pointer' }}
-      onClick={() => document.getElementById(s.anchor)?.scrollIntoView({ behavior: 'smooth' })}
-    >
-      <div style={{ fontSize: 32, fontWeight: 700, color: '#00d4aa' }}>{s.value}</div>
-      <div className="label" style={{ marginTop: 4 }}>{s.label}</div>
-    </div>
-  ))}
-</div>
+          {[
+            { label: 'Total Feedback', value: data.total_feedback, anchor: 'all-feedback' },
+            { label: 'Clusters Found', value: filteredClusters.length, anchor: 'clusters' },
+            { label: 'Urgent Items', value: filteredUrgent.length, anchor: 'urgent' },
+          ].map(s => (
+            <div
+              className="card"
+              key={s.label}
+              style={{ textAlign: 'center', margin: 0, cursor: 'pointer' }}
+              onClick={() => document.getElementById(s.anchor)?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              <div style={{ fontSize: 32, fontWeight: 700, color: '#00d4aa' }}>{s.value}</div>
+              <div className="label" style={{ marginTop: 4 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
 
         {/* Department Sentiment Chart */}
         {deptData.length > 0 && (
@@ -195,10 +226,10 @@ export default function AdminDashboard() {
         )}
 
         {/* Clusters */}
-        {data.clusters.length > 0 && (
+        {filteredClusters.length > 0 && (
           <div>
             <div id="clusters" style={{ fontWeight: 600, marginBottom: 12 }}>Clusters</div>
-            {data.clusters.map((cluster, i) => (
+            {filteredClusters.map((cluster, i) => (
               <div key={i} className={`card ${cluster.is_urgent ? 'urgent' : ''}`}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                   <span style={{ fontWeight: 600 }}>{cluster.label}</span>
@@ -214,73 +245,57 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        {/* Urgent Clusters — show clusters that are urgent */}
-{data.clusters.filter(c => c.is_urgent).length > 0 && (
-  <div>
-    <div id="urgent" style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444' }}>🚨 Urgent Issues</div>
-    {data.clusters.filter(c => c.is_urgent).map((cluster, i) => (
-      <div key={i} className="card urgent">
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-          <span style={{ fontWeight: 600 }}>{cluster.label}</span>
-          <span style={{ color: '#ef4444', fontSize: 13 }}>
-            {cluster.sentiment_score.toFixed(2)} · {cluster.size} items
-          </span>
-        </div>
-        {cluster.items.map((item, j) => (
-          <div key={j} style={{ fontSize: 13, color: '#8899bb', marginTop: 4 }}>
-            • {item.text}
-          </div>
-        ))}
-      </div>
-    ))}
-  </div>
-)}
-
-{/* Urgent unclustered items — exclude items already in urgent clusters */}
-{(() => {
-  const urgentClusterTexts = new Set(
-    data.clusters
-      .filter(c => c.is_urgent)
-      .flatMap(c => c.items.map(i => i.text.trim().toLowerCase()))
-  );
-  const remainingUrgent = data.urgent_items.filter(
-    item => !urgentClusterTexts.has(item.text.trim().toLowerCase())
-  );
-  return remainingUrgent.length > 0 ? (
-    <div style={{ marginTop: 16 }}>
-      <div style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444', fontSize: 13 }}>
-        Other Urgent Feedback
-      </div>
-      {remainingUrgent.map((item, i) => (
-        <div key={i} className="card urgent">
-          <div style={{ fontSize: 13 }}>{item.text}</div>
-          {item.department && <div className="label" style={{ marginTop: 4 }}>{item.department}</div>}
-        </div>
-      ))}
-    </div>
-  ) : null;
-})()}
-
-        {/* Uncategorized / Noise */}
-        {data.noise_items && data.noise_items.length > 0 && (
+        {/* Urgent Issues */}
+        {filteredClusters.filter(c => c.is_urgent).length > 0 && (
           <div>
-            <div style={{ fontWeight: 600, marginBottom: 12, color: '#8899bb' }}>
-              Uncategorized ({data.noise_items.length} items)
-            </div>
-            {data.noise_items.map((item, i) => (
-              <div key={i} className="card" style={{ borderLeft: '4px solid #2a3f6f' }}>
-                <div style={{ fontSize: 13 }}>{item.text}</div>
-                {item.department && (
-                  <div className="label" style={{ marginTop: 4 }}>{item.department}</div>
-                )}
+            <div id="urgent" style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444' }}>🚨 Urgent Issues</div>
+            {filteredClusters.filter(c => c.is_urgent).map((cluster, i) => (
+              <div key={i} className="card urgent">
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <span style={{ fontWeight: 600 }}>{cluster.label}</span>
+                  <span style={{ color: '#ef4444', fontSize: 13 }}>
+                    {cluster.sentiment_score.toFixed(2)} · {cluster.size} items
+                  </span>
+                </div>
+                {cluster.items.map((item, j) => (
+                  <div key={j} style={{ fontSize: 13, color: '#8899bb', marginTop: 4 }}>• {item.text}</div>
+                ))}
               </div>
             ))}
           </div>
         )}
-        {/* View All Toggle */}
-        <div id="all-feedback">
-  <ViewAll sessionLike={title} />
-</div>
+
+        {/* Other Urgent Feedback */}
+        {remainingUrgent.length > 0 && (
+          <div style={{ marginTop: 16 }}>
+            <div style={{ fontWeight: 600, marginBottom: 12, color: '#ef4444', fontSize: 13 }}>
+              Other Urgent Feedback
+            </div>
+            {remainingUrgent.map((item, i) => (
+              <div key={i} className="card urgent">
+                <div style={{ fontSize: 13 }}>{item.text}</div>
+                {item.department && <div className="label" style={{ marginTop: 4 }}>{item.department}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Uncategorized */}
+        {filteredNoise.length > 0 && (
+          <div>
+            <div style={{ fontWeight: 600, marginBottom: 12, color: '#8899bb' }}>
+              Uncategorized ({filteredNoise.length} items)
+            </div>
+            {filteredNoise.map((item, i) => (
+              <div key={i} className="card" style={{ borderLeft: '4px solid #2a3f6f' }}>
+                <div style={{ fontSize: 13 }}>{item.text}</div>
+                {item.department && <div className="label" style={{ marginTop: 4 }}>{item.department}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+
+        <ViewAll />
       </div>
     );
   };
@@ -292,9 +307,26 @@ export default function AdminDashboard() {
         <TestFeedback />
         <h2 style={{ marginBottom: 24 }}>Feedback Analysis</h2>
 
-        {/* Student Submissions — auto loaded */}
+        {/* Department Filter */}
+        {submissions && submissions.total_feedback > 0 && (
+          <div style={{ marginBottom: 24, display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span style={{ color: '#8899bb', fontSize: 13 }}>Filter by department:</span>
+            <select
+              value={selectedDept}
+              onChange={e => setSelectedDept(e.target.value)}
+              style={{ width: 'auto', padding: '6px 12px' }}
+            >
+              <option value="All">All</option>
+              {['CSE', 'ECE', 'EEE', 'MCA'].map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {/* Student Submissions */}
         {submissions && submissions.total_feedback > 0
-          ? renderAnalysis(submissions, `All Feedback (${submissions.total_feedback} total)`)
+          ? renderAnalysis(submissions, `All Feedback (${submissions.total_feedback} total)`, selectedDept)
           : <div className="card" style={{ color: '#8899bb', fontSize: 13 }}>
               No student submissions yet.
             </div>
@@ -323,7 +355,7 @@ export default function AdminDashboard() {
         {error && <div className="error" style={{ marginBottom: 16 }}>{error}</div>}
         {loading && <div style={{ color: '#8899bb', fontSize: 13, marginBottom: 16 }}>Processing...</div>}
 
-        {result && renderAnalysis(result, 'CSV Analysis')}
+        {result && renderAnalysis(result, 'CSV Analysis', selectedDept)}
       </div>
     </div>
   );
